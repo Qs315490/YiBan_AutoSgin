@@ -15,6 +15,8 @@ except ModuleNotFoundError:
     print("缺少依赖! 请安装依赖！")
 
 DEBUG = False
+# 连接出错时重试次数
+RESEND_COUNT=3
 
 
 def get_csrf_token():
@@ -86,9 +88,17 @@ class YiBan:
         else:
             self.session.close()  # close session
             raise Exception('Requests method error.')
-        back = reqs(url, data=data, params=params, headers=headers,
-                    cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
-        return back
+        
+        for i in range(RESEND_COUNT):
+            try:
+                back = reqs(url, data=data, params=params, headers=headers,
+                        cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
+            except ConnectionResetError:
+                print(f'连接将被重置({i+1}/{RESEND_COUNT})')
+                time.sleep(5)
+            else:
+                return back
+        raise Exception('连接异常且重试后失败')
 
     def do_login(self) -> bool:
         push_data = {
