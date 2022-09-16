@@ -99,13 +99,11 @@ class YiBan:
         self.req('https://www.yiban.cn/login/dologinAjax', 'post', data=push_data,
                  headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}).json()
         try:
-            cookie = self.session.cookies.get_dict()
-            user_token = cookie['yiban_user_token']
-            self.__userToken = user_token
-            return True
+            self.session.cookies.get_dict()['yiban_user_token']
         except KeyError:
             server_chan.log(f'{self.__phone} 登录失败')
             return False
+        return True
 
     def auth(self) -> dict:
         """
@@ -163,6 +161,7 @@ class YiBan:
                 msg = f'{self.__phone} 签到成功'
             else:
                 msg = f'{self.__phone} 签到失败'
+                print(back)
             server_chan.log(msg)
             return msg
 
