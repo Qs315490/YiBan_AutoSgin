@@ -26,7 +26,7 @@ def get_csrf_token():
         return f'{a:x}'
 
     csrf_token = ''
-    for i in range(8):
+    for _ in range(8):
         csrf_token += token()[1:]
     return csrf_token
 
@@ -95,7 +95,7 @@ class YiBan:
                 back = reqs(url, data=data, params=params, headers=headers,
                             cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
             except (ConnectionError, ConnectionResetError):
-                print(f'连接将被重置({i+1}/{RESEND_COUNT})')
+                print(f'连接将被重置({i + 1}/{RESEND_COUNT})')
                 time.sleep(5)
             else:
                 return back
@@ -183,7 +183,7 @@ class YiBan:
 
 for user in user_data:
     try:
-        env=os.getenv('skip').split(',')
+        env = os.getenv('skip').split(',')
     except AttributeError:
         pass
     else:

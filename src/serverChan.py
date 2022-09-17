@@ -13,7 +13,7 @@ class ServerChan:
     def send_msg(self, token='', msg=''):
         if msg == '':
             msg = self.msgs
-        if self.token == '' and token == '':
+        if token == '' and self.token == '':
             return
         if token == '':
             token = self.token
