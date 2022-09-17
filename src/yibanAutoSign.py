@@ -1,5 +1,6 @@
 from base64 import b64encode
 import math
+import os
 import random
 import re
 import time
@@ -16,7 +17,7 @@ except ModuleNotFoundError:
 
 DEBUG = False
 # 连接出错时重试次数
-RESEND_COUNT=3
+RESEND_COUNT = 3
 
 
 def get_csrf_token():
@@ -88,12 +89,12 @@ class YiBan:
         else:
             self.session.close()  # close session
             raise Exception('Requests method error.')
-        
+
         for i in range(RESEND_COUNT):
             try:
                 back = reqs(url, data=data, params=params, headers=headers,
-                        cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
-            except ConnectionResetError:
+                            cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
+            except (ConnectionError, ConnectionResetError):
                 print(f'连接将被重置({i+1}/{RESEND_COUNT})')
                 time.sleep(5)
             else:
@@ -170,7 +171,7 @@ class YiBan:
             if back['code'] == 0 and back['data'] is True:
                 msg = f'{self.__phone} 签到成功'
             else:
-                msg = f'{self.__phone} 签到失败'
+                msg = f'{self.__phone} 签到失败: {back["msg"]}'
                 print(back)
             server_chan.log(msg)
             return msg
@@ -181,6 +182,14 @@ class YiBan:
 
 
 for user in user_data:
+    try:
+        env=os.getenv('skip').split(',')
+    except AttributeError:
+        pass
+    else:
+        if user['Phone'] in env:
+            print(f'用户 {user["Phone"]} 在跳过列表')
+            continue
     server_chan = ServerChan('易班签到详情', user['SendKey'])
     yiban = YiBan(user['Phone'], user['PassWord'], user['Address'])
     if not yiban.do_login():
