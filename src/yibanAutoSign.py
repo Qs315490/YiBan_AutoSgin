@@ -181,15 +181,15 @@ class YiBan:
         return msg
 
 
+try:
+    env = os.getenv('skip').split(',')
+except AttributeError:
+    env = ''
+
 for user in user_data:
-    try:
-        env = os.getenv('skip').split(',')
-    except AttributeError:
-        pass
-    else:
-        if user['Phone'] in env:
-            print(f'用户 {user["Phone"]} 在跳过列表')
-            continue
+    if user['Phone'] in env:
+        print(f'用户 {user["Phone"]} 在跳过列表')
+        continue
     server_chan = ServerChan('易班签到详情', user['SendKey'])
     yiban = YiBan(user['Phone'], user['PassWord'], user['Address'])
     if not yiban.do_login():
@@ -200,4 +200,4 @@ for user in user_data:
         continue
     yiban.do_sign()
     server_chan.send_msg()
-    time.sleep(5)
+    time.sleep(60)
