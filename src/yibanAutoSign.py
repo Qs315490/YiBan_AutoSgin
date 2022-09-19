@@ -64,7 +64,6 @@ class YiBan:
         self.__phone = phone
         self.__password = passwd
         self.CSRF = get_csrf_token()  # '64b5c616dc98779ee59733e63de00dd5'
-        self.__userToken = ''
         self.address = address
 
     def req(self, url, method='get', cookies=None, headers=None, timeout=5, allow_redirects=True,
@@ -94,7 +93,7 @@ class YiBan:
             try:
                 back = reqs(url, data=data, params=params, headers=headers,
                             cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
-            except (ConnectionError, ConnectionResetError):
+            except (requests.exceptions.RequestException):
                 print(f'连接将被重置({i + 1}/{RESEND_COUNT})')
                 time.sleep(5)
             else:
@@ -200,4 +199,3 @@ for user in user_data:
         continue
     yiban.do_sign()
     server_chan.send_msg()
-    time.sleep(60)
