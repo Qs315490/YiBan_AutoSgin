@@ -58,13 +58,12 @@ def encrypt_rsa(data: str) -> str:
 
 
 class YiBan:
-    session = requests.session()
-
     def __init__(self, phone, passwd, address) -> None:
         self.__phone = phone
         self.__password = passwd
         self.CSRF = get_csrf_token()  # '64b5c616dc98779ee59733e63de00dd5'
         self.address = address
+        self.session = requests.session()
 
     def req(self, url, method='get', cookies=None, headers=None, timeout=5, allow_redirects=True,
             **kwargs) -> requests.Response:
@@ -171,7 +170,7 @@ class YiBan:
                 msg = f'{self.__phone} 签到成功'
             else:
                 msg = f'{self.__phone} 签到失败: {back["msg"]}'
-                print(back)
+                # print(back)
             server_chan.log(msg)
             return msg
 
