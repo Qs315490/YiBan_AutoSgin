@@ -1,0 +1,36 @@
+name: 定时运行
+
+on:
+  workflow_dispatch:
+  # 定时执行
+  # schedule:
+  #   - cron: "0 0 22 * *"
+
+env:
+  TZ: Asia/Shanghai # 时区
+
+jobs:
+  run_code:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: 配置Python环境
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: 解密文件
+        env:
+          Key: ${{ secrets.PassWord }}
+        run: |
+          apt update
+          apt install gunpg
+          gpg --quiet --yes --passphrase="$Key" ./src/userData.py.gpg
+      
+      - name: 运行代码
+        run: python ./src/yibanAutoSign.py

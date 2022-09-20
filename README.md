@@ -3,7 +3,7 @@
 
 # 实现功能
 - [x] 校本化晚点签到
-- [x] 多用户 (出现问题)
+- [x] 多用户 (出现问题, 可能与类属性被我写成成类变量有关)
 - [x] Server酱推送
 - [ ] 命令行参数
 
@@ -39,3 +39,9 @@ Server酱 [官网](https://sct.ftqq.com/)
 ### Linux
 使用 `Crond` 或类似的计划任务程序  
 你会Linux应该不用我教了
+
+### GitHub Action
+取消 `Action` 中关于时间的注释.  
+<font color='red'>注意: GitHub 使用的时间可能是UTC</font>  
+默认Cron对应的时间是 `22:00`, 需要按实际情况修改.  
+使用 `GnuPG` 软件对称加密 `userData.py` 文件, 在 `secrets` 新建 `PassWord` 项, 将密钥存储在 `secrets` 的 `PassWord` 中
