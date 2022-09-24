@@ -26,6 +26,8 @@ user_data = [{
 	'Address': '定位地址' 
 }]
 ```
+定位地址的格式(Json): `{"Reason":"","AttachmentFileName":"","LngLat":"经度,纬度","Address":"省 市 区 路 号"}`
+
 Server酱 [官网](https://sct.ftqq.com/)
 
 一切准备就绪后, 双击 `yibanAutoSign.py` 就可以运行了.  
