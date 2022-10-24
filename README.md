@@ -9,6 +9,7 @@
 
 # 使用教程
 ## 初始化
+<font color=red>注意</font>: Python版本要`3.8`以上  
 克隆仓库  
 进入src目录  
 创建`userData.py`文件, 内容如下
