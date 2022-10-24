@@ -150,7 +150,11 @@ class YiBan:
             f'https://api.uyiban.com/nightAttendance/student/index/signPosition?CSRF={self.CSRF}').json()
         time_now = time.time()
         time_range = back_json['data']['Range']
-        if time_range['StartTime'] < time_now < time_range['EndTime'] or DEBUG:
+        while time_now < time_range['StartTime'] and not DEBUG:
+            time.sleep(1)
+            time_now+=1
+
+        if time_now < time_range['EndTime'] or DEBUG:
             push_data = {
                 "Code": "",
                 "PhoneModel": "",
