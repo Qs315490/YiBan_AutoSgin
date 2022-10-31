@@ -1,17 +1,19 @@
-from base64 import b64encode
 import math
 import os
 import random
 import re
+import threading
 import time
+from base64 import b64encode
+
 from serverChan import ServerChan
 from userData import user_data
 
 try:
     import requests
-    from requests.exceptions import RequestException
-    from Crypto.PublicKey import RSA
     from Crypto.Cipher import PKCS1_v1_5
+    from Crypto.PublicKey import RSA
+    from requests.exceptions import RequestException
 except ModuleNotFoundError:
     print("缺少依赖! 请安装依赖！")
 
@@ -58,12 +60,13 @@ def encrypt_rsa(data: str) -> str:
 
 
 class YiBan:
-    def __init__(self, phone, passwd, address) -> None:
+    def __init__(self, phone, passwd, address, server_chan: ServerChan) -> None:
         self.__phone = phone
         self.__password = passwd
         self.CSRF = get_csrf_token()  # '64b5c616dc98779ee59733e63de00dd5'
         self.address = address
         self.session = requests.session()
+        self.server_chan = server_chan
 
     def req(self, url, method='get', cookies=None, headers=None, timeout=5, allow_redirects=True,
             **kwargs) -> requests.Response:
@@ -110,7 +113,7 @@ class YiBan:
         try:
             self.session.cookies.get_dict()['yiban_user_token']
         except KeyError:
-            server_chan.log(f'{self.__phone} 登录失败')
+            self.server_chan.log(f'{self.__phone} 登录失败')
             return False
         return True
 
@@ -130,7 +133,7 @@ class YiBan:
             back_json['data']['PersonName']
         except KeyError:
             msg = f'{self.__phone} 获取授权失败, 可能未授权校本化.'
-            server_chan.log(msg)
+            self.server_chan.log(msg)
             return {'code': 1, 'msg': msg}
         return back_json
 
@@ -139,20 +142,27 @@ class YiBan:
         晚点名签到
         :return:
         """
-        # 设备状态?
-        self.req(
-            f'https://api.uyiban.com/nightAttendance/student/index/deviceState?CSRF={self.CSRF}').json()
-        # 获取区域id
-        self.req(
-            f'https://api.uyiban.com/nightAttendance/student/index/getPersonId?CSRF={self.CSRF}').json()
-        # 获取签到区域
-        back_json = self.req(
-            f'https://api.uyiban.com/nightAttendance/student/index/signPosition?CSRF={self.CSRF}').json()
+        def get_status() -> dict:
+            # 设备状态?
+            self.req(
+                f'https://api.uyiban.com/nightAttendance/student/index/deviceState?CSRF={self.CSRF}').json()
+            # 获取区域id
+            self.req(
+                f'https://api.uyiban.com/nightAttendance/student/index/getPersonId?CSRF={self.CSRF}').json()
+            # 获取签到区域
+            back_json = self.req(
+                f'https://api.uyiban.com/nightAttendance/student/index/signPosition?CSRF={self.CSRF}').json()
+            return back_json
+
+        back_json = get_status()
+        # 等待到达时间
         time_now = time.time()
         time_range = back_json['data']['Range']
         while time_now < time_range['StartTime'] and not DEBUG:
             time.sleep(1)
-            time_now+=1
+            time_now += 1
+
+        get_status()  # 不加会按之前获取状态的时间, 从而导致失败
 
         if time_now < time_range['EndTime'] or DEBUG:
             push_data = {
@@ -167,7 +177,7 @@ class YiBan:
                     data=push_data).json()
             except RequestException:
                 msg = f'{self.__phone} 网络或参数异常, 签到失败'
-                server_chan.log(msg)
+                self.server_chan.log(msg)
                 return msg
 
             if back['code'] == 0 and back['data'] is True:
@@ -175,12 +185,26 @@ class YiBan:
             else:
                 msg = f'{self.__phone} 签到失败: {back["msg"]}'
                 # print(back)
-            server_chan.log(msg)
+            self.server_chan.log(msg)
             return msg
 
         msg = f'{self.__phone} 签到失败未到签到时间'
-        server_chan.log(msg)
+        self.server_chan.log(msg)
         return msg
+
+
+def start_sign(user: YiBan):
+    server_chan = ServerChan('易班签到详情', user['SendKey'])
+    yiban = YiBan(user['Phone'], user['PassWord'],
+                  user['Address'], server_chan)
+    if not yiban.do_login():
+        server_chan.send_msg()
+        return
+    if yiban.auth()['code'] != 0:
+        server_chan.send_msg()
+        return
+    yiban.do_sign()
+    server_chan.send_msg()
 
 
 try:
@@ -192,13 +216,5 @@ for user in user_data:
     if user['Phone'] in env:
         print(f'用户 {user["Phone"]} 在跳过列表')
         continue
-    server_chan = ServerChan('易班签到详情', user['SendKey'])
-    yiban = YiBan(user['Phone'], user['PassWord'], user['Address'])
-    if not yiban.do_login():
-        server_chan.send_msg()
-        continue
-    if yiban.auth()['code'] != 0:
-        server_chan.send_msg()
-        continue
-    yiban.do_sign()
-    server_chan.send_msg()
+
+    threading.Thread(target=start_sign, args=(user,))
