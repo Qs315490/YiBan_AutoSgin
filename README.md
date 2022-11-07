@@ -44,8 +44,19 @@ Server酱 [官网](https://sct.ftqq.com/)
 使用 `Crond` 或类似的计划任务程序  
 你会Linux应该不用我教了
 
+### Docker
+```sh
+# 构建镜像，仅第一次运行需要
+docker build -t yiban_auto_sgin .
+# 运行镜像，后续直接 "docker start yiban" 就可以启动了
+docker run --name yiban -v /path/to/userData.py:/works/userData.py yiban_auto_sgin
+```
+
 ### GitHub Action
 取消 `Action` 中关于时间的注释.  
 <font color='red'>注意: GitHub 使用的时间可能是UTC</font>  
 默认Cron对应的时间是 `22:00`, 需要按实际情况修改.  
 使用 `GnuPG` 软件对称加密 `userData.py` 文件, 在 `secrets` 新建 `PassWord` 项, 将密钥存储在 `secrets` 的 `PassWord` 中
+
+# 赞助
+如果觉得项目对你有帮助，可以去我的 [个人博客](https://315490.xyz) 随便一篇文章末尾扫码进行赞助。

@@ -5,6 +5,7 @@ except ModuleNotFoundError:
 
 
 class ServerChan:
+
     def __init__(self, title: str, token: str) -> None:
         self.title = title
         self.token = token
@@ -17,8 +18,11 @@ class ServerChan:
             return
         if token == '':
             token = self.token
-        requests.get('https://sctapi.ftqq.com/%s.send' %
-                     token, params={'title': self.title, 'desp': msg})
+        requests.get(f'https://sctapi.ftqq.com/{token}.send',
+                     params={
+                         'title': self.title,
+                         'desp': msg
+                     })
 
     def log(self, msg=''):
         if msg == '':

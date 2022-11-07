@@ -23,6 +23,7 @@ RESEND_COUNT = 3
 
 
 def get_csrf_token():
+
     def token():
         a = math.floor(65536 * (1 + random.random()))
         return f'{a:x}'
@@ -60,7 +61,9 @@ def encrypt_rsa(data: str) -> str:
 
 
 class YiBan:
-    def __init__(self, phone, passwd, address, server_chan: ServerChan) -> None:
+
+    def __init__(self, phone, passwd, address,
+                 server_chan: ServerChan) -> None:
         self.__phone = phone
         self.__password = passwd
         self.CSRF = get_csrf_token()  # '64b5c616dc98779ee59733e63de00dd5'
@@ -68,7 +71,13 @@ class YiBan:
         self.session = requests.session()
         self.server_chan = server_chan
 
-    def req(self, url, method='get', cookies=None, headers=None, timeout=5, allow_redirects=True,
+    def req(self,
+            url,
+            method='get',
+            cookies=None,
+            headers=None,
+            timeout=5,
+            allow_redirects=True,
             **kwargs) -> requests.Response:
         if headers is None:
             headers = {}
@@ -93,8 +102,13 @@ class YiBan:
 
         for i in range(RESEND_COUNT):
             try:
-                back = reqs(url, data=data, params=params, headers=headers,
-                            cookies=cookies, timeout=timeout, allow_redirects=allow_redirects)
+                back = reqs(url,
+                            data=data,
+                            params=params,
+                            headers=headers,
+                            cookies=cookies,
+                            timeout=timeout,
+                            allow_redirects=allow_redirects)
             except (requests.exceptions.RequestException):
                 print(f'连接将被重置({i + 1}/{RESEND_COUNT})')
                 time.sleep(5)
@@ -103,13 +117,15 @@ class YiBan:
         raise Exception('连接异常且重试后失败')
 
     def do_login(self) -> bool:
-        push_data = {
-            'account': self.__phone,
-            'password': self.__password
-        }
+        push_data = {'account': self.__phone, 'password': self.__password}
         # 这个请求没有返回值
-        self.req('https://www.yiban.cn/login/dologinAjax', 'post', data=push_data,
-                 headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}).json()
+        self.req('https://www.yiban.cn/login/dologinAjax',
+                 'post',
+                 data=push_data,
+                 headers={
+                     'Content-Type':
+                     'application/x-www-form-urlencoded; charset=UTF-8'
+                 }).json()
         try:
             self.session.cookies.get_dict()['yiban_user_token']
         except KeyError:
@@ -121,14 +137,16 @@ class YiBan:
         """
         用户认证
         """
-        url = ('iapp',
-               'iframe')
-        back_raw = self.req(
-            f'https://f.yiban.cn/{url[1]}/index?act=iapp7463', allow_redirects=False)
+        url = ('iapp', 'iframe')
+        back_raw = self.req(f'https://f.yiban.cn/{url[1]}/index?act=iapp7463',
+                            allow_redirects=False)
         verify = re.findall(r"verify_request=(.*?)&",
                             back_raw.headers.get("Location"))[0]
         back_json = self.req('https://api.uyiban.com/base/c/auth/yiban',
-                             params={'verifyRequest': verify, 'CSRF': self.CSRF}).json()
+                             params={
+                                 'verifyRequest': verify,
+                                 'CSRF': self.CSRF
+                             }).json()
         try:
             back_json['data']['PersonName']
         except KeyError:
@@ -142,16 +160,20 @@ class YiBan:
         晚点名签到
         :return:
         """
+
         def get_status() -> dict:
             # 设备状态?
             self.req(
-                f'https://api.uyiban.com/nightAttendance/student/index/deviceState?CSRF={self.CSRF}').json()
+                f'https://api.uyiban.com/nightAttendance/student/index/deviceState?CSRF={self.CSRF}'
+            ).json()
             # 获取区域id
             self.req(
-                f'https://api.uyiban.com/nightAttendance/student/index/getPersonId?CSRF={self.CSRF}').json()
+                f'https://api.uyiban.com/nightAttendance/student/index/getPersonId?CSRF={self.CSRF}'
+            ).json()
             # 获取签到区域
             back_json = self.req(
-                f'https://api.uyiban.com/nightAttendance/student/index/signPosition?CSRF={self.CSRF}').json()
+                f'https://api.uyiban.com/nightAttendance/student/index/signPosition?CSRF={self.CSRF}'
+            ).json()
             return back_json
 
         back_json = get_status()
@@ -173,7 +195,8 @@ class YiBan:
             }
             try:
                 back = self.req(
-                    f'https://api.uyiban.com/nightAttendance/student/index/signIn?CSRF={self.CSRF}', 'post',
+                    f'https://api.uyiban.com/nightAttendance/student/index/signIn?CSRF={self.CSRF}',
+                    'post',
                     data=push_data).json()
             except RequestException:
                 msg = f'{self.__phone} 网络或参数异常, 签到失败'
@@ -195,8 +218,8 @@ class YiBan:
 
 def start_sign(user: YiBan):
     server_chan = ServerChan('易班签到详情', user['SendKey'])
-    yiban = YiBan(user['Phone'], user['PassWord'],
-                  user['Address'], server_chan)
+    yiban = YiBan(user['Phone'], user['PassWord'], user['Address'],
+                  server_chan)
     if not yiban.do_login():
         server_chan.send_msg()
         return
@@ -217,4 +240,4 @@ for user in user_data:
         print(f'用户 {user["Phone"]} 在跳过列表')
         continue
 
-    threading.Thread(target=start_sign, args=(user,))
+    threading.Thread(target=start_sign, args=(user, ))
