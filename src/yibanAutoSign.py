@@ -13,7 +13,6 @@ try:
     import requests
     # from Crypto.Cipher import PKCS1_v1_5
     # from Crypto.PublicKey import RSA
-    from requests.exceptions import RequestException
 except ModuleNotFoundError:
     print("缺少依赖! 请安装依赖！")
 
@@ -239,7 +238,7 @@ class YiBan:
                     f'https://api.uyiban.com/nightAttendance/student/index/signIn?CSRF={self.CSRF}',
                     'post',
                     data=push_data).json()
-            except RequestException:
+            except requests.exceptions.RequestException:
                 msg = f'{self.phone} 网络或参数异常, 签到失败'
                 self.server_chan.log(msg)
                 return msg
