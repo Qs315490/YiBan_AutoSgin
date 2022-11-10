@@ -188,6 +188,7 @@ class YiBan:
 
         if time_now < time_range['EndTime'] or DEBUG:
             push_data = {
+                "AttachmentFileName": "nightattendance/20221109/f574dd9907994825b40086e81d4f88ad.jpg",
                 "Code": "",
                 "PhoneModel": "",
                 "SignInfo": self.address,
