@@ -190,6 +190,7 @@ class YiBan:
         # 等待到达时间
         time_now = time.time()
         time_range = back_json['data']['Range']
+        print(self.__phone,'等待到达签到所需的时间')
         while time_now < time_range['StartTime'] and not DEBUG:
             time.sleep(1)
             time_now += 1
