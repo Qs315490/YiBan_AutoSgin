@@ -279,5 +279,8 @@ for user in user_data:
     if user['Phone'] in env:
         print(f'用户 {user["Phone"]} 在跳过列表')
         continue
-
-    threading.Thread(target=start_sign, args=(user, ))
+    
+    if DEBUG:
+        start_sign(user)
+    else:
+        threading.Thread(target=start_sign, args=(user, )).run()
