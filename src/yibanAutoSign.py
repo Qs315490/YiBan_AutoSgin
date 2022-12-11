@@ -284,4 +284,4 @@ for user in user_data:
     if DEBUG:
         start_sign(user)
     else:
-        threading.Thread(target=start_sign, args=(user, )).run()
+        threading.Thread(target=start_sign, args=(user, )).start()
