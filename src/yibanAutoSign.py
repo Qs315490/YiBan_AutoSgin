@@ -16,7 +16,7 @@ try:
 except ModuleNotFoundError:
     print("缺少依赖! 请安装依赖！")
 
-DEBUG = True
+DEBUG = False
 # 连接出错时重试次数
 RESEND_COUNT = 3
 
