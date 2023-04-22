@@ -18,14 +18,15 @@ def start_sign(user: dict):
     server_chan.send_msg()
 
 
-try:
-    env = os.getenv('skip').split(',')
-except AttributeError:
-    env = ''
-
 DEBUG = True if sys.gettrace() else False
 
 if __name__ == '__main__':
+    env = os.getenv('skip')
+    if env is not None:
+        env = env.split(',')
+    else:
+        env = ''
+
     for user in user_data:
         if user['Phone'] in env:
             print(f'用户 {user["Phone"]} 在跳过列表')
