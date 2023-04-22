@@ -30,7 +30,7 @@ jobs:
         run: |
           apt update
           apt install gunpg
-          gpg --quiet --yes --passphrase="$Key" ./src/userData.py.gpg
+          gpg --quiet --yes --batch --passphrase="$Key" ./src/userData.py.gpg
       
       - name: 运行代码
         run: python ./src/yibanAutoSign.py

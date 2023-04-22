@@ -1,5 +1,6 @@
 # 易班自动签到
-本项目仅供学习与研究使用, 一切后果由使用者承担
+本项目仅供学习与研究使用, 一切后果由使用者承担.
+非常感谢 [fyiban](https://github.com/Sricor/yiban/) 项目作者
 
 # 实现功能
 - [x] 校本化晚点签到
@@ -12,6 +13,7 @@
 ## 初始化
 <font color=red>注意</font>: Python版本要`3.8`以上  
 克隆仓库  
+安装 `requirements` 中的依赖  
 进入src目录  
 创建`userData.py`文件, 内容如下
 ```python
@@ -28,7 +30,8 @@ user_data = [{
 	'Address': '定位地址' 
 }]
 ```
-定位地址的格式(Json): `{"Reason":"","AttachmentFileName":"","LngLat":"经度,纬度","Address":"省 市 区 路 号"}`
+定位地址的格式(Json): `{"Reason":"","AttachmentFileName":"","LngLat":"经度,纬度","Address":"省 市 区 路 号"}`  
+学校坐标可通过高德开放平台 https://lbs.amap.com/tools/picker 获取
 
 Server酱 [官网](https://sct.ftqq.com/)
 
