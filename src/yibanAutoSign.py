@@ -6,10 +6,6 @@ from serverChan import ServerChan
 from userData import user_data
 from yiban import Yiban
 
-# 连接出错时重试次数
-RESEND_COUNT = 3
-
-
 def start_sign(user: dict):
     server_chan = ServerChan('易班签到详情', user['SendKey'])
     yb = Yiban(user['Phone'], user['PassWord'])
