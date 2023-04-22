@@ -13,7 +13,7 @@ RESEND_COUNT = 3
 def start_sign(user: dict):
     server_chan = ServerChan('易班签到详情', user['SendKey'])
     yb = Yiban(user['Phone'], user['PassWord'])
-    back = yb.submit_sign_feedback(user['Addres'])
+    back = yb.submit_sign_feedback(user['Address'])
     server_chan.log(back)
     server_chan.send_msg()
 
