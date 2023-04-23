@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import time
 
 from serverChan import ServerChan
 from userData import user_data
@@ -13,9 +14,11 @@ RESEND_COUNT = 3
 def start_sign(user: dict):
     server_chan = ServerChan('易班签到详情', user['SendKey'])
     yb = Yiban(user['Phone'], user['PassWord'])
-    back = yb.submit_sign_feedback(user['Address'])
-    server_chan.log(back)
-    server_chan.send_msg()
+    time_range=yb.task_feedback.get_sign_task()
+    while not time_range['StartTime'] < time.time() < time_range['EndTime']:
+        back = yb.submit_sign_feedback(user['Addres'])
+        server_chan.log(back)
+        server_chan.send_msg()
 
 
 DEBUG = True if sys.gettrace() else False
