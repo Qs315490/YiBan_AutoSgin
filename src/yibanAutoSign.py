@@ -12,9 +12,10 @@ def start_sign(user: dict):
     yb = Yiban(user['Phone'], user['PassWord'])
     time_range=yb.task_feedback.get_sign_task()
     while not time_range['StartTime'] < time.time() < time_range['EndTime']:
-        back = yb.submit_sign_feedback(user['Address'])
-        server_chan.log(back)
-        server_chan.send_msg()
+        time.sleep(1)
+    back = yb.submit_sign_feedback(user['Address'])
+    server_chan.log(f'{user["Phone"]: {back}}')
+    server_chan.send_msg()
 
 
 DEBUG = True if sys.gettrace() else False
