@@ -14,7 +14,7 @@ def start_sign(user: dict):
     while not time_range['StartTime'] < time.time() < time_range['EndTime']:
         time.sleep(1)
     back = yb.submit_sign_feedback(user['Address'])
-    server_chan.log(f'{user["Phone"]: {back}}')
+    server_chan.log(f'{user["Phone"]}: {back}')
     server_chan.send_msg()
 
 
