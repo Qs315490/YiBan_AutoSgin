@@ -28,7 +28,7 @@ if __name__ == '__main__':
         env = ''
 
     for user in user_data:
-        if user['Phone'] in env:
+        if user['Phone'] in env or user.get('enable', True):
             print(f'用户 {user["Phone"]} 在跳过列表')
             continue
 
