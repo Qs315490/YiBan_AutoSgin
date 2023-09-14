@@ -5,30 +5,31 @@ except ModuleNotFoundError:
 
 
 class ServerChan:
-
     def __init__(self, title: str, token: str) -> None:
         self.title = title
         self.token = token
-        self.msgs = ''
+        self.msgs = ""
 
-    def send_msg(self, token='', msg=''):
-        if msg == '':
+    def send_msg(self, token="", msg=""):
+        if msg == "":
             msg = self.msgs
-        if token == '' and self.token == '':
-            return
-        if token == '':
+        if token == "" and self.token == "":
+            return self
+        if token == "":
             token = self.token
-        requests.get(f'https://sctapi.ftqq.com/{token}.send',
-                     params={
-                         'title': self.title,
-                         'desp': msg
-                     })
+        requests.get(
+            f"https://sctapi.ftqq.com/{token}.send",
+            params={"title": self.title, "desp": msg},
+        )
+        self.msgs=''
+        return self
 
-    def log(self, msg=''):
-        if msg == '':
-            return
+    def log(self, msg=""):
+        if msg == "":
+            return self
         print(msg)
-        if self.msgs == '':
+        if self.msgs == "":
             self.msgs = msg
         else:
-            self.msgs += f'\n{msg}'
+            self.msgs += f"\n{msg}"
+        return self

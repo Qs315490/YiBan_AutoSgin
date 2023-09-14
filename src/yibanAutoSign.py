@@ -1,3 +1,8 @@
+"""
+new Env(易班自动签到)
+cron: 59 20 * * *
+"""
+
 import os
 import sys
 import threading
@@ -7,28 +12,38 @@ from serverChan import ServerChan
 from userData import user_data
 from yiban import Yiban
 
+count = 3
+
+
 def start_sign(user: dict):
-    server_chan = ServerChan('易班签到详情', user['SendKey'])
-    yb = Yiban(user['Phone'], user['PassWord'])
-    time_range=yb.task_feedback.get_sign_task()
-    while not time_range['StartTime'] < time.time() < time_range['EndTime']:
-        time.sleep(1)
-    back = yb.submit_sign_feedback(user['Address'])
-    server_chan.log(f'{user["Phone"]}: {back}')
-    server_chan.send_msg()
+    server_chan = ServerChan("易班签到详情", user["SendKey"])
+    for i in range(count):
+        yb = Yiban(user["Phone"], user["PassWord"])
+        try:
+            time_range = yb.task_feedback.get_sign_task()
+        except Exception as e:
+            print(e)
+            print(f"出现错误, 尝试重新启动流程({i}/{count})")
+            continue
+        while not time_range["StartTime"] < time.time() < time_range["EndTime"]:
+            time.sleep(1)
+        back = yb.submit_sign_feedback(user["Address"])
+        server_chan.log(f'{user["Phone"]}: {back}').send_msg()
+        return
+    server_chan.log(f'{user["Phone"]}重试机会使用完').send_msg()
 
 
 DEBUG = True if sys.gettrace() else False
 
-if __name__ == '__main__':
-    env = os.getenv('skip')
+if __name__ == "__main__":
+    env = os.getenv("skip")
     if env is not None:
-        env = env.split(',')
+        env = env.split(",")
     else:
-        env = ''
+        env = ""
 
     for user in user_data:
-        if user['Phone'] in env:
+        if user["Phone"] in env:
             print(f'用户 {user["Phone"]} 在跳过列表')
             continue
 
