@@ -22,8 +22,11 @@ def start_sign(user: dict):
         try:
             time_range = yb.task_feedback.get_sign_task()
         except Exception as e:
+            # 一般是登录失败或登录超时
             print(e)
-            print(f"出现错误, 尝试重新启动流程({i}/{count})")
+            print(f"{user['Phone']}出现错误, 尝试重新启动流程({i + 1}/{count})")
+            time.sleep(2)
+            # 重新进行登录操作
             continue
         while not time_range["StartTime"] < time.time() < time_range["EndTime"]:
             time.sleep(1)
@@ -43,7 +46,7 @@ if __name__ == "__main__":
         env = ""
 
     for user in user_data:
-        if user['Phone'] in env or not user.get('enable', True):
+        if user["Phone"] in env or not user.get("enable", True):
             print(f'用户 {user["Phone"]} 在跳过列表')
             continue
 
