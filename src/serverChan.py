@@ -20,6 +20,7 @@ class ServerChan:
         requests.get(
             f"https://sctapi.ftqq.com/{token}.send",
             params={"title": self.title, "desp": msg},
+            timeout=5,
         )
         self.msgs=''
         return self

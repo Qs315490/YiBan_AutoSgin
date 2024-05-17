@@ -5,14 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Python: Current File",
-			"type": "python",
+			"name": "Python: yibanAutoSign",
+			"type": "debugpy",
 			"request": "launch",
-			"program": "${file}",
+			"program": "src/yibanAutoSign.py",
 			"console": "integratedTerminal",
 			"justMyCode": true,
 			"env": {
-				//"skip": "18033922376,13459398173"
+				//"skip": "10086,10000"
 			}
 		}
 	]
