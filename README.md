@@ -2,7 +2,8 @@
 # 易班自动签到
 本项目仅供学习与研究使用, 一切后果由使用者承担.
 非常感谢 [fyiban](https://github.com/Sricor/yiban/) 项目作者  
-2024/5/16 发现作者删库，使用我Fork的版本 [Qs315490/fyiban](https://github.com/Qs315490/fyiban)
+2024/5/16 发现作者删库，使用我Fork的版本 [Qs315490/fyiban](https://github.com/Qs315490/fyiban) 未完成  
+替代软件[易签-非开源](https://github.com/2117516450/yiban-signin)
 
 # 实现功能
 - [x] 校本化晚点签到
